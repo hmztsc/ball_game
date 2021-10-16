@@ -1,0 +1,171 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+   <meta charset="UTF-8">
+   <meta http-equiv="X-UA-Compatible" content="IE=edge">
+   <meta name="viewport" content="width=device-width, initial-scale=1.0">
+   <title>Document</title>
+   <meta name="robots" content="noindex">
+
+   <style>
+
+      *{
+         user-select: none;
+      }
+
+      .ball{
+         width: 150px;
+         height: 150px;
+         border-radius: 150px;
+         position: absolute;
+         cursor:pointer;
+      }
+
+      .score{
+         position: fixed;
+         bottom:0;
+         right:0;
+         background:white;
+         color:black;
+         font-size:3vw;
+         padding:1vw;
+      }
+      .game-over{
+         font-size:5vw;
+         opacity: 0;
+         visibility: hidden;
+         position: absolute;
+         top:0;
+         left:0;
+         width: 100%;
+         height: 100%;
+         text-align: center;
+         display:flex;
+         justify-content: center;
+         align-items:center;
+         color:red;
+         z-index: 1;
+         background-color: rgba(255,255,255,0.7);
+      }
+      .game-over.active{
+         visibility: visible;
+         opacity: 1;
+
+      }
+      .transition{
+         display: none;
+      }
+
+   </style>
+
+</head>
+<body>
+
+   <script src="https://code.jquery.com/jquery-3.6.0.min.js" integrity="sha256-/xUj+3OJU5yExlq6GSYGSHk7tPXikynS7ogEvDej/m4=" crossorigin="anonymous"></script>
+   <script>
+
+      // Timer
+      var t = 1000;
+ 
+      f1();
+      
+      // Function that changes the timer
+      function changeTimer(){
+         t = Math.ceil(t * 0.99);
+         console.log(t);
+      }
+      
+      // Function to run at irregular intervals
+      function f1() {
+
+         myTimer();
+         var body = $("body");
+         if(body.find(".ball").first().offset().top + 150 == $(document).height()){
+            return;
+         }
+
+         changeTimer();
+         setTimeout(f1, t);
+      }
+
+
+      function myTimer() {
+         var body = $("body");
+
+         body.append("<div class='ball'></div>");
+         var ball = body.find(".ball").last();
+         gox = getRandomInt($(document).width());
+
+         if(gox + 150 > $(document).width()){
+            gox = $(document).width() - 150;
+         }
+
+         ball.css({
+            "top":"-150px",
+            "left":gox,
+            "background":getRandomColor()
+         });
+
+         ball.animate({
+            top: $(document).height() - 150,
+         }, {duration:3000,easing:"linear"}, function() {
+            // Animation complete.
+         });
+
+         $(".transition").html(parseInt($(".transition").html()) - 150);
+      }
+
+      var myVar2 = setInterval(() => {
+         var body = $("body");
+         if(body.find(".ball").first().length == 1){
+            if(body.find(".ball").first().offset().top + 150 == $(document).height()){
+               $(".game-over").addClass("active");
+               $(".ball").each(function(){
+                  $(this).stop();
+               });
+            };
+         }
+      }, 0);
+
+      $("body").append("<div class='score'>0</div>");
+      $("body").append("<div class='game-over'>GAME OVER</div>");
+      $("body").append("<div class='transition'>0</div>");
+
+      $(document).on("mousedown",".ball",function(e){
+         $(this).remove();
+         scorePlus();
+      });
+
+      function scorePlus(){
+         $(".score").html(1 + parseInt($(".score").html()));
+      }
+
+      /* function move(ball,gox,goy){
+
+         var x = ball.position().left,
+            y = ball.position().top;
+
+         ball.animate({
+            top: $(document).height() - 50,
+            left: $(document).width() - 50,
+         }, {duration:3000,easing:"linear"}, function() {
+            // Animation complete.
+         });
+      } */
+
+      function getRandomColor() {
+         var letters = '0123456789ABCDEF';
+         var color = '#';
+         for (var i = 0; i < 6; i++) {
+            color += letters[Math.floor(Math.random() * 16)];
+         }
+         return color;
+      }
+
+      function getRandomInt(max) {
+         return Math.ceil(Math.random() * max);
+      }
+
+   </script>
+</body>
+</html>
